@@ -13,4 +13,13 @@ import json
 
 from db_engine import engine, get_db
 
+from pydantic_models import ChatMessage as PydanticChatMessage
+
 router = APIRouter()
+
+
+@router.post("/chat")
+async def chat(chat_message: PydanticChatMessage, db: Session = Depends(get_db)):
+    user_id = chat_message.user_id
+    message = chat_message.message
+    
