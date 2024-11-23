@@ -20,8 +20,13 @@ class Feedback(BaseModel):
     user_id: int
     insight: str
     for_manager: bool
+
+
 class PlanOfAction(BaseModel):
     user_id: int
     user_name:str
     categorized_action_items:Dict
     target_user_id: int
+
+class RunPipelineRequest(BaseModel):
+    user_id: int

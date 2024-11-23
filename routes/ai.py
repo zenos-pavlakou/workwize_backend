@@ -15,6 +15,11 @@ from pkgs.ai.chatbot import Chatbot
 from db_models import Chat as DbChat
 from db_engine import engine, get_db
 from pydantic_models import ChatMessage as PydanticChatMessage
+from pydantic_models import RunPipelineRequest 
+from pkgs.system import queries as system_queries 
+from pkgs.ai import pipeline 
+from threading import Thread
+
 
 router = APIRouter()
 chatbot = Chatbot()
@@ -69,4 +74,15 @@ async def chat(chat_message: PydanticChatMessage, db: Session = Depends(get_db))
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    
+def _run_pipeline(user_id: int, user_name: str):
+    api_key = os.environ["OPENAI_API_KEY"]
+    pipeline.run_pipeline(user_id, user_name, api_key)
 
+@router.post("/run-pipeline")
+async def run_pipeline(request_data: RunPipelineRequest,db: Session = Depends(get_db)):
+    user=system_queries.get_user(request_data.user_id,db)
+    thread = Thread(target=_run_pipeline, args=(request_data.user_id, user.name))
+    thread.start()
+    return 200
+    
