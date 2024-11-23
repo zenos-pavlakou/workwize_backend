@@ -2,7 +2,11 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from pydantic_models import ChatMessage as PydanticChatModel
+from pydantic_models import PlanOfAction as PydanticPlanOfAction
+from pydantic_models import User as PydanticUserModel
 from db_models import Chat as DbChatModel
+from db_models import PlanOfAction as DbPlanOfActionModel
+from db_models import User as DbUserModel
 from db_engine import engine, get_db
 
 
@@ -38,3 +42,46 @@ def get_user_conversation(
     ]
 
     return pydantic_chat_items
+
+def get_personal_plan_of_actions(user_id: int,db: Session = Depends(get_db)):
+    plan_of_actions = (
+        db.query(DbPlanOfActionModel)
+        .filter(DbPlanOfActionModel.user_id == user_id)
+        .all()
+    )
+     # Convert to Pydantic models
+    pydantic_plan_of_actions = [
+        PydanticPlanOfAction(
+            user_id= actions.user_id,
+            user_name= actions.user_name ,
+            categorized_action_items=actions.categorized_action_items,
+            target_user_id= actions.target_user_id,
+        )
+        for actions in plan_of_actions
+    ]
+    return pydantic_plan_of_actions
+
+def get_plan_of_actions(db: Session = Depends(get_db)):
+    plan_of_actions = (
+        db.query(DbPlanOfActionModel)
+        .all()
+    )
+     # Convert to Pydantic models
+    pydantic_plan_of_actions = [
+        PydanticPlanOfAction(
+            user_id= actions.user_id,
+            user_name= actions.user_name ,
+            categorized_action_items=actions.categorized_action_items,
+            target_user_id= actions.target_user_id,
+        )
+        for actions in plan_of_actions
+    ]
+    return pydantic_plan_of_actions
+
+def get_user(user_id: int,db: Session = Depends(get_db)) ->PydanticUserModel:
+    user = (
+        db.query(DbUserModel).filter(DbUserModel.id == user_id)
+        .one_or_none()
+    )
+    result=PydanticUserModel(name=user.name,is_manager=user.is_manager)
+    return result

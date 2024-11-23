@@ -1,4 +1,4 @@
-from typing import List
+from typing import List,Dict
 from datetime import datetime
 from pydantic import BaseModel, ValidationError, field_validator, EmailStr
 
@@ -20,3 +20,8 @@ class Feedback(BaseModel):
     user_id: int
     insight: str
     for_manager: bool
+class PlanOfAction(BaseModel):
+    user_id: int
+    user_name:str
+    categorized_action_items:Dict
+    target_user_id: int
