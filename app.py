@@ -38,5 +38,5 @@ if __name__ == "__main__":
     # uvicorn.run(app, host="0.0.0.0", port=8000)
     openai_api_key = os.environ["OPENAI_API_KEY"]
 
-    pipeline.run_pipeline(user_id=1, user_name="Zenos Pavlakou", api_key=openai_api_key)
+    pipeline.run_pipeline(user_id=2, user_name="Zoe Carr", api_key=openai_api_key)
 

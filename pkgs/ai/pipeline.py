@@ -3,11 +3,14 @@ from pprint import pprint
 from db_engine import SessionLocal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Any, List
+from pkgs.system.actions import plan_of_actions
+import json
 
 
 def transform_pipeline_results(pipeline_results: Dict[str, Any], user_id: int, user_name: str) -> Dict[str, Any]:
     """
-    Transform pipeline results into a standardized format with categorized action items.
+    Transform pipeline results into a standardized format with separated employee and manager action items.
+    Both employee and manager sections maintain the same structure with user_id, name, and categorized_action_items.
 
     Args:
         pipeline_results: Results from the feedback pipeline
@@ -15,24 +18,29 @@ def transform_pipeline_results(pipeline_results: Dict[str, Any], user_id: int, u
         user_name: Name of the user
 
     Returns:
-        Dict containing user info and categorized action items
+        Dict containing separated employee and manager data, each with their own user info and categorized action items
     """
-
     # Initialize the output structure
     transformed_results = {
-        "user_id": user_id,
-        "name": user_name,
-        "categorized_action_items": []
+        "employee": {
+            "user_id": user_id,
+            "name": user_name,
+            "categorized_action_items": []
+        },
+        "manager": {
+            "user_id": user_id,  # Using same user_id for manager section as it relates to the employee
+            "name": user_name,  # Using same name for manager section as it relates to the employee
+            "categorized_action_items": []
+        }
     }
-
-    # Combine all action plans from both employee and manager sections
-    all_categories = {}
 
     # Process employee action plans
     if 'employee' in pipeline_results and 'action_plans' in pipeline_results['employee']:
         for category, items in pipeline_results['employee']['action_plans'].items():
-            if category not in all_categories:
-                all_categories[category] = []
+            category_entry = {
+                "category": category,
+                "action_items": []
+            }
 
             for item in items:
                 action_item = {
@@ -41,13 +49,17 @@ def transform_pipeline_results(pipeline_results: Dict[str, Any], user_id: int, u
                     "action_plan": item['actions'],
                     "progress_notes": []
                 }
-                all_categories[category].append(action_item)
+                category_entry["action_items"].append(action_item)
+
+            transformed_results["employee"]["categorized_action_items"].append(category_entry)
 
     # Process manager action plans
     if 'manager' in pipeline_results and 'action_plans' in pipeline_results['manager']:
         for category, items in pipeline_results['manager']['action_plans'].items():
-            if category not in all_categories:
-                all_categories[category] = []
+            category_entry = {
+                "category": category,
+                "action_items": []
+            }
 
             for item in items:
                 action_item = {
@@ -56,18 +68,9 @@ def transform_pipeline_results(pipeline_results: Dict[str, Any], user_id: int, u
                     "action_plan": item['actions'],
                     "progress_notes": []
                 }
-                all_categories[category].append(action_item)
+                category_entry["action_items"].append(action_item)
 
-    # Convert the categories dictionary to the required list format
-    categorized_items = []
-    for category, items in all_categories.items():
-        category_entry = {
-            "category": category,
-            "action_items": items
-        }
-        categorized_items.append(category_entry)
-
-    transformed_results["categorized_action_items"] = categorized_items
+            transformed_results["manager"]["categorized_action_items"].append(category_entry)
 
     return transformed_results
 
@@ -118,7 +121,10 @@ def run_pipeline(user_id: int, user_name: str, api_key: str) -> Dict[str, Any]:
                     "error": str(e),
                     "categorized_insights": {}
                 }
-    results = coach.run(results, api_key)
+    results = coach.run(results, api_key, user_name)
     results = transform_pipeline_results(results, user_id, user_name)
-    pprint(results)
+    plan_of_actions(user_id, user_name, results["manager"], 1, SessionLocal())
+    plan_of_actions(user_id, user_name, results["employee"], user_id, SessionLocal())
+
     return results
+

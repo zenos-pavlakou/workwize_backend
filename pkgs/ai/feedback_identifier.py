@@ -110,7 +110,7 @@ class FeedbackExtractionAgent:
         return report
 
 def get_user_conversation(user_id: int, session) -> list[ChatMessage]:
-    return system_queries.get_user_conversation(1, session)
+    return system_queries.get_user_conversation(user_id, session)
 
 def format_user_conversation(conversation_data: list[ChatMessage]):
     if not conversation_data:
