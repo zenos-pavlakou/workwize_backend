@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column,JSON ,Integer, String, DateTime, Fo
 from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime
 
-__all__ = ["User", "Chat","PlanofAction"]
+__all__ = ["User", "Chat","PlanOfAction"]
 
 
 class Base(DeclarativeBase):
@@ -18,7 +18,7 @@ class User(Base):
     # Add the back reference for the relationship
     chats = relationship("Chat", back_populates="user")
     #relation to PlanofAction
-    plan_of_actions=relationship("PlamofAction", back_populates="user")
+    plan_of_actions=relationship("PlanOfAction", back_populates="user")
 
 
 class Chat(Base):
