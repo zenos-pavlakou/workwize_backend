@@ -19,10 +19,10 @@ from db_models import User as DbUser
 router = APIRouter()
 
 
-@app.post("/add_user_to_db")
+@router.post("/users")
 async def add_user_to_db(user: PydanticUser, db: Session = Depends(get_db)):
     # If the user does not exist, add them to the database
-    new_user = DbUser()
+    new_user = DbUser(name=user.name, is_manager=user.is_manager)
     db.add(new_user)
     try:
         db.commit()
