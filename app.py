@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 
 from routes.ai import router as ai_router
 from routes.system import router as system_router
+from pkgs.system import queries as system_queries
+from pkgs.ai import feedback_identifier
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 
 
@@ -35,7 +40,10 @@ app.include_router(system_router)
 
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # import uvicorn
+    # uvicorn.run(app, host="0.0.0.0", port=8000)
+    openai_api_key = os.environ["OPENAI_API_KEY"]
+    data = feedback_identifier.run(user_id=1, api_key=openai_api_key)
+    from pprint import pprint
 
-
+    pprint(data)

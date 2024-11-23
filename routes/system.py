@@ -16,6 +16,8 @@ from db_engine import engine, get_db
 from pydantic_models import User as PydanticUser
 from db_models import User as DbUser
 
+from pkgs.system import queries as system_queries
+
 router = APIRouter()
 
 
@@ -30,3 +32,8 @@ async def add_user_to_db(user: PydanticUser, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/conversation/{user_id}")
+async def get_conversation(user_id: int, db: Session = Depends(get_db)):
+    return await system_queries.get_user_conversation(user_id, db)

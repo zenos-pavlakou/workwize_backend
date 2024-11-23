@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, Foreign
 from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime
 
-__all__ = ["User", "Chat"]  # Include both classes
+__all__ = ["User", "Chat"]
 
 
 class Base(DeclarativeBase):
@@ -25,5 +25,4 @@ class Chat(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     message = Column(String, nullable=False)
     is_ai = Column(Boolean, nullable=False)
-
     user = relationship("User", back_populates="chats")

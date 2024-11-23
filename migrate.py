@@ -1,7 +1,7 @@
 from db_models import (
-    Base, 
+    Base,
     User,
-    Chat
+    Chat,
 )
 
 from db_engine import engine

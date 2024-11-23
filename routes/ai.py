@@ -28,16 +28,17 @@ async def stream_and_store(
 ) -> AsyncGenerator[str, None]:
     chunks = []
 
-    # First collect all chunks
     try:
         for chunk in original_stream:
-            chunks.append(chunk)
+            # Pass through original chunk to client
             yield chunk
 
-        # Parse JSON chunks and extract content
-        chunks = [json.loads(chunk).get('content', '') for chunk in chunks if chunk.strip()]
+            # Store content for database
+            if chunk.strip():
+                content = json.loads(chunk).get('content', '')
+                chunks.append(content)
 
-        # After all chunks are collected, save as one message
+        # After streaming completes, save the complete message
         complete_message = "".join(chunks)
         ai_message = DbChat(
             user_id=user_id,
