@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from db_engine import SessionLocal
 
 from routes.ai import router as ai_router
 from routes.system import router as system_router
 from pkgs.system import queries as system_queries
-from pkgs.ai import pipeline
+from pkgs.system import actions as system_actions
+from pkgs.ai import feedback_identifier
 import os
 from dotenv import load_dotenv
 
@@ -36,7 +38,12 @@ app.include_router(system_router)
 if __name__ == "__main__":
     # import uvicorn
     # uvicorn.run(app, host="0.0.0.0", port=8000)
-    openai_api_key = os.environ["OPENAI_API_KEY"]
+    # openai_api_key = os.environ["OPENAI_API_KEY"]
+    # data = feedback_identifier.run(user_id=1, api_key=openai_api_key)
+    from pprint import pprint
 
-    pipeline.run_pipeline(user_id=1, user_name="Zenos Pavlakou", api_key=openai_api_key)
-
+    # pprint(data)
+    #system_actions.plan_of_actions(1,"BOB",{1:"abc"},1,SessionLocal())
+    #user_id: int,user_name: str,categorized_action_items: JSON,target_user_id:int, db: Session = Depends(get_db)
+    #system_queries.get_personal_plan_of_actions(1,SessionLocal())
+    pprint(system_queries.get_user(1,SessionLocal()))

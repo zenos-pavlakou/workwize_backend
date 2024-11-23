@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from pydantic_models import ChatMessage as PydanticChatModel
 from pydantic_models import PlanOfAction as PydanticPlanOfAction
+from pydantic_models import User as PydanticUserModel
 from db_models import Chat as DbChatModel
 from db_models import PlanOfAction as DbPlanOfActionModel
+from db_models import User as DbUserModel
 from db_engine import engine, get_db
 
 
@@ -57,6 +59,7 @@ def get_personal_plan_of_actions(user_id: int,db: Session = Depends(get_db)):
         )
         for actions in plan_of_actions
     ]
+    return pydantic_plan_of_actions
 
 def get_plan_of_actions(db: Session = Depends(get_db)):
     plan_of_actions = (
@@ -73,3 +76,12 @@ def get_plan_of_actions(db: Session = Depends(get_db)):
         )
         for actions in plan_of_actions
     ]
+    return pydantic_plan_of_actions
+
+def get_user(user_id: int,db: Session = Depends(get_db)) ->PydanticUserModel:
+    user = (
+        db.query(DbUserModel).filter(DbUserModel.id == user_id)
+        .one_or_none()
+    )
+    result=PydanticUserModel(name=user.name,is_manager=user.is_manager)
+    return result
