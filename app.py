@@ -11,22 +11,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://radbytes.org:5000", 
-        "http://localhost:8080", 
-        "http://localhost:8081", 
+        "http://radbytes.org:5000",
+        "http://localhost:8080",
+        "http://localhost:8081",
         "http://206.189.114.61:5000",
         "https://radbytes.org",
         "https://radbytes.org:443",
         "https://www.radbytes.org",
         "https://www.radbytes.org:443",
-    ], 
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,10 +32,6 @@ app.add_middleware(
 
 app.include_router(ai_router)
 app.include_router(system_router)
-
-    
-
-
 
 if __name__ == "__main__":
     # import uvicorn
