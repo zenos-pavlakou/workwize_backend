@@ -36,10 +36,10 @@ app.include_router(ai_router)
 app.include_router(system_router)
 
 if __name__ == "__main__":
-    # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=8000)
-    openai_api_key = os.environ["OPENAI_API_KEY"]
-    pipeline.run_pipeline(user_id=2, user_name="Zoe Carr", api_key=openai_api_key)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # openai_api_key = os.environ["OPENAI_API_KEY"]
+    # pipeline.run_pipeline(user_id=2, user_name="Zoe Carr", api_key=openai_api_key)
     # openai_api_key = os.environ["OPENAI_API_KEY"]
     # data = feedback_identifier.run(user_id=1, api_key=openai_api_key)
     # from pprint import pprint

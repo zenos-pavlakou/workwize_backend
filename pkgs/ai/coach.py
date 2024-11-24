@@ -61,17 +61,31 @@ Write it from an informal perspective, as if you are the person who will take th
 Feedback: {feedback}
 
 Respond with only the title on a single line. Example:
-'Enhance My Cloud Computing Skills' or 'Improve My Team Communication'"""
+'Enhance Your Cloud Computing Skills' or 'Improve Your Team Communication'"""
 
                     steps_prompt = f"""Convert this {category} feedback into specific action steps. 
 Write the steps from a first-person perspective, as actions you will take personally.
 Provide 2-3 clear, actionable steps for improvement.
 
+IMPORTANT: Only suggest specific courses if the feedback explicitly mentions a desire or need for training/learning.
+If and only if training is mentioned in the feedback, include a specific course recommendation with platform and instructor.
+Focus on practical, hands-on actions that can be taken immediately rather than defaulting to formal training.
+
+Example formats:
+When training IS mentioned in feedback:
+ACTION: Enroll in AWS Solutions Architect Professional by Adrian Cantrill on learn.cantrill.io
+ACTION: Apply new cloud architecture patterns in the current project redesign
+
+When training is NOT mentioned:
+ACTION: Schedule weekly code reviews with senior developers
+ACTION: Document three key learnings from each project completion
+ACTION: Take the lead on the next client presentation
+
+Lastly, in the ACTIONS, do not use the word 'my'. Use the word 'your' instead.
+
 Feedback: {feedback}
 
-Respond with only action steps, one per line, starting with 'ACTION:'. Be specific and concrete. Example:
-ACTION: Enroll in an advanced cloud computing certification course
-ACTION: Practice new skills by building a cloud-native application"""
+Respond with only action steps, one per line, starting with 'ACTION:'. Be specific and concrete."""
 
                 else:  # manager
                     title_prompt = f"""Based on this {category} feedback, generate a concise, specific action plan title (3-7 words) 
@@ -86,11 +100,23 @@ Respond with only the title on a single line. Example:
 Use {employee_name}'s name instead of saying "the employee".
 Provide 2-3 clear, actionable steps for improvement.
 
+IMPORTANT: Only suggest specific courses if the feedback explicitly mentions a need for training/learning opportunities.
+If and only if training is specifically relevant to the feedback, include a specific course recommendation.
+Focus on actionable management steps rather than defaulting to training solutions.
+
+Example formats:
+When training IS mentioned in feedback:
+ACTION: Enroll {employee_name} in Executive Leadership by Wharton Business School on Coursera
+ACTION: Create monthly mentoring sessions to reinforce leadership training concepts
+
+When training is NOT mentioned:
+ACTION: Schedule bi-weekly 1:1s with {employee_name} to provide regular feedback
+ACTION: Assign {employee_name} as technical lead for the upcoming client project
+ACTION: Create opportunities for {employee_name} to mentor junior team members
+
 Feedback: {feedback}
 
-Respond with only action steps, one per line, starting with 'ACTION:'. Be specific and concrete. Example:
-ACTION: Schedule a meeting with {employee_name} to discuss their workload distribution
-ACTION: Create opportunities for {employee_name} to lead team projects"""
+Respond with only action steps, one per line, starting with 'ACTION:'. Be specific and concrete."""
 
                 title_response = self.llm.complete(title_prompt)
                 action_title = title_response.text.strip().strip("'").strip('"')

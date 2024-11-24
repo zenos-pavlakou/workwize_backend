@@ -30,3 +30,22 @@ class PlanOfAction(BaseModel):
 
 class RunPipelineRequest(BaseModel):
     user_id: int
+
+class UserRequest(BaseModel):
+    user_id: int
+
+
+class ActionPlan(BaseModel):
+    action_title: str
+    action_status: str
+    action_plan: List[str]
+    progress_notes: List[str]
+
+class CategoryGroup(BaseModel):
+    category: str
+    action_items: List[ActionPlan]
+
+class EmployeeActionItems(BaseModel):
+    user_id: int
+    name: str
+    categorized_action_items: List[CategoryGroup]

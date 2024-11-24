@@ -6,8 +6,12 @@ from pydantic_models import PlanOfAction as PydanticPlanOfAction
 from pydantic_models import User as PydanticUserModel
 from db_models import Chat as DbChatModel
 from db_models import PlanOfAction as DbPlanOfActionModel
+from pydantic_models import EmployeeActionItems as PydanticEmployeeActionItems
+from pydantic_models import CategoryGroup as PydanticCategoryGroup
+from pydantic_models import ActionPlan as PydanticActionPlan
 from db_models import User as DbUserModel
 from db_engine import engine, get_db
+import json
 
 
 def get_user_conversation(
@@ -84,4 +88,86 @@ def get_user(user_id: int,db: Session = Depends(get_db)) ->PydanticUserModel:
         .one_or_none()
     )
     result=PydanticUserModel(name=user.name,is_manager=user.is_manager)
+    return result
+
+
+def get_user_action_plan(user_id: int, db: Session = Depends(get_db)) -> PydanticEmployeeActionItems | None:
+    # Get the action plan from database
+    action_plan = (
+        db.query(DbPlanOfActionModel)
+        .filter(DbPlanOfActionModel.target_user_id == user_id)
+        .filter(DbPlanOfActionModel.user_id == user_id)
+        .one_or_none()
+    )
+
+    if not action_plan:
+        return None
+
+    # Get the raw value
+    raw_data = getattr(action_plan, 'categorized_action_items', None)
+
+    # Extract the inner categorized_action_items array
+    categorized_items = raw_data.get('categorized_action_items', []) if isinstance(raw_data, dict) else []
+
+    return PydanticEmployeeActionItems(
+        user_id=action_plan.target_user_id,
+        name=action_plan.user_name,
+        categorized_action_items=[
+            PydanticCategoryGroup(
+                category=category_group["category"],
+                action_items=[
+                    PydanticActionPlan(
+                        action_title=item["action_title"],
+                        action_status=item["action_status"],
+                        action_plan=item["action_plan"],
+                        progress_notes=item["progress_notes"]
+                    )
+                    for item in category_group["action_items"]
+                ]
+            )
+            for category_group in categorized_items
+        ]
+    )
+
+
+def get_manager_action_plan(db: Session = Depends(get_db)) -> list[PydanticEmployeeActionItems]:
+    # Get all action plans where target_user_id is 1
+    action_plans = (
+        db.query(DbPlanOfActionModel)
+        .filter(DbPlanOfActionModel.target_user_id == 1)
+        .all()
+    )
+
+    if not action_plans:
+        return []
+
+    result = []
+    for action_plan in action_plans:
+        # Get the raw value
+        raw_data = getattr(action_plan, 'categorized_action_items', None)
+
+        # Extract the inner categorized_action_items array
+        categorized_items = raw_data.get('categorized_action_items', []) if isinstance(raw_data, dict) else []
+
+        employee_action_items = PydanticEmployeeActionItems(
+            user_id=action_plan.target_user_id,
+            name=action_plan.user_name,
+            categorized_action_items=[
+                PydanticCategoryGroup(
+                    category=category_group["category"],
+                    action_items=[
+                        PydanticActionPlan(
+                            action_title=item["action_title"],
+                            action_status=item["action_status"],
+                            action_plan=item["action_plan"],
+                            progress_notes=item["progress_notes"]
+                        )
+                        for item in category_group["action_items"]
+                    ]
+                )
+                for category_group in categorized_items
+            ]
+        )
+        result.append(employee_action_items)
+
     return result
