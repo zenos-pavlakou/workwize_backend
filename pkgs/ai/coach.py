@@ -56,7 +56,7 @@ class FeedbackCoach:
                 # Customize prompts based on role type
                 if role_type == 'employee':
                     title_prompt = f"""Based on this {category} feedback, generate a concise, specific action plan title (3-7 words).
-Write it from a first-person perspective, as if you are the person who will take these actions.
+Write it from an informal perspective, as if you are the person who will take these actions. For example, say things like Improve Your Skills in X.
 
 Feedback: {feedback}
 
@@ -124,7 +124,7 @@ ACTION: Create opportunities for {employee_name} to lead team projects"""
 def run(feedback_results: Dict[str, Any], api_key: str, employee_name: str) -> Dict[str, Any]:
     """Process feedback results and generate action titles with action steps."""
     coach = FeedbackCoach(OpenAI(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         api_key=api_key
     ))
 

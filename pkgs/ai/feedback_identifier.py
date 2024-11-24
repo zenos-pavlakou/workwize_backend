@@ -40,7 +40,7 @@ class FeedbackAnalyzer:
                     Employee Feedback:
                     {feedback_context}
 
-                    Provide between 2 and 8 key findings. Format each as:
+                    Provide between 2 and 6 key findings. Format each as:
                     FINDING: [Direct, concise observation of what was expressed]
 
                     Example good findings:
