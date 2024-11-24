@@ -183,7 +183,7 @@ def run(feedback_items: List[str], api_key: str) -> Dict:
     """
     try:
         categorizer = EmployeeInsightsCategorizer(OpenAI(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             api_key=api_key
         ))
 

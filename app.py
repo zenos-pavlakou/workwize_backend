@@ -21,6 +21,7 @@ app.add_middleware(
         "http://radbytes.org:5000",
         "http://localhost:8080",
         "http://localhost:8081",
+        "http://localhost:3000",
         "http://206.189.114.61:5000",
         "https://radbytes.org",
         "https://radbytes.org:443",
@@ -37,7 +38,7 @@ app.include_router(system_router)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=3002)
     # openai_api_key = os.environ["OPENAI_API_KEY"]
     # pipeline.run_pipeline(user_id=2, user_name="Zoe Carr", api_key=openai_api_key)
     # openai_api_key = os.environ["OPENAI_API_KEY"]

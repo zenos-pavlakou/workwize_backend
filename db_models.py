@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column,JSON ,Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy.sql import func
 from datetime import datetime
 
 __all__ = ["User", "Chat","PlanOfAction"]
@@ -27,6 +28,7 @@ class Chat(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     message = Column(String, nullable=False)
     is_ai = Column(Boolean, nullable=False)
+    timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     user = relationship("User", back_populates="chats")
 
 class PlanOfAction(Base):

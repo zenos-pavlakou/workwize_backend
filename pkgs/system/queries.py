@@ -150,7 +150,7 @@ def get_manager_action_plan(db: Session = Depends(get_db)) -> list[PydanticEmplo
         categorized_items = raw_data.get('categorized_action_items', []) if isinstance(raw_data, dict) else []
 
         employee_action_items = PydanticEmployeeActionItems(
-            user_id=action_plan.target_user_id,
+            user_id=action_plan.user_id,
             name=action_plan.user_name,
             categorized_action_items=[
                 PydanticCategoryGroup(

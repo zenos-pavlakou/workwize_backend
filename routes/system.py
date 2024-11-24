@@ -36,16 +36,15 @@ async def add_user_to_db(user: PydanticUser, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/conversation/{user_id}")
 async def get_conversation(user_id: int, db: Session = Depends(get_db)):
     return system_queries.get_user_conversation(user_id, db)
 
-@router.get("/employee-action-plan/{user_id}")
+@router.get("/employees/{user_id}")
 async def get_employee_action_plan(user_id: int, db: Session = Depends(get_db)) -> PydanticEmployeeActionItems | None:
     return system_queries.get_user_action_plan(user_id, db)
 
-@router.get("/manager-action-plan")
+@router.get("/employees")
 async def get_manager_action_plan(db: Session = Depends(get_db)) -> list[PydanticEmployeeActionItems] | None:
     return system_queries.get_manager_action_plan(db)
 
